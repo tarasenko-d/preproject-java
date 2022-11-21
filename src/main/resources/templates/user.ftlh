@@ -101,8 +101,8 @@
             }
         }
 
-        .visible-admin {
-            display: none;
+        .visible-bar {
+            visibility: hidden;
         }
 
     </style>
@@ -116,8 +116,11 @@
 
 <div class="main">
 
-    <div class="sidenav">
+    <div class="sidenav admin-bar">
         <a href="/list" class="admin-panel">Admin</a> <br>
+        <a href="/user" class="is-active">User</a>
+    </div>
+    <div class="sidenav user-bar">
         <a href="/user" class="is-active">User</a>
     </div>
     <div class="central">
@@ -174,7 +177,7 @@
                             role.innerHTML = data.role;
 
                             if(data.role=="ROLE_ADMIN") {
-                                $('.admin-panel').removeClass('visible-admin');
+                                $('.user-bar').addClass('visible-bar');
                             }
 
                             row.appendChild(id);
