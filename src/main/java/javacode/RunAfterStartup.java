@@ -52,7 +52,7 @@ public class RunAfterStartup {
             System.out.println(user);
             userDao.save(user);
         }
-
+        System.out.println("Run after startup end.");
     }
 }
 

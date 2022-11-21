@@ -86,7 +86,8 @@
             font-size: 14px; /* Increased text to enable scrolling */
             padding: 0px 10px;
         }
-        .central{
+
+        .central {
             margin-left: 10px;
             border-radius: 0px 0px 4px 4px;
         }
@@ -124,7 +125,7 @@
 <body>
 
 <div class="header">
-    <a>---@mail.ru role: --- </a>
+    <a id="mail-role"></a>
 </div>
 
 <div class="main">
@@ -140,21 +141,19 @@
         <div class="panel">
             <a href="/list">List of users</a>
             <a href="/admin/add" class="active">Add user</a>
+            <a href="/kids">Age list</a>
         </div>
         <div class="add-form">
-            <form name="user" action="/admin/add" method="POST">
+            <form id="user-save">
                 <label>Логин</label> <br/>
-                <input type="text" name="login"><br/>
-                <label>Пароль</label> <br/>
-                <input type="text" name="password"> <br/>
-                <label>Возраст</label> <br/>
-                <input type="text" name="age"> <br/> <br/>
-                <select name="roles" label="Role" required="required">
-                    <option>Выберите вариант</option>
-                    <option value="ROLE_USER">ROLE_USER</option>
-                    <option value="ROLE_ADMIN">ROLE_ADMIN</option>
-                </select><br/> <br/>
-                <input type="submit" class="btn btn-primary" value="Сохранить"/>
+                <input id="login-input" type="text" name="login" > <br/><br/>
+                <label>Пароль</label><br/>
+                <input id="password-input" type="text" name="password"  > <br/><br/>
+                <label>Возраст</label><br/>
+                <input id="age-input" type="text" name="age" > <br/><br/>
+
+                <button id="modal__save-button" class="btn btn-primary"/>
+                Сохранить</button>
             </form>
         </div>
     </div>
@@ -169,6 +168,59 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function () {
+        mailRoleString()
+
+
+        $('#modal__save-button').click(function (event) {
+            event.preventDefault();
+            var form = $('#user-save');
+            var formInput = form[0];
+            console.log(formInput);
+            sendAjaxForm(formInput);
+        });
+
+        function sendAjaxForm(form) {
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify({
+                    login: form[0].value,
+                    password: form[1].value,
+                    age: +form[2].value
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: 'http://localhost:8081/save/rest',
+                success: function (form) {
+                    console.log(form);
+                }
+            });
+        }
+
+        function mailRoleString() {
+            $.ajax({
+                type: 'GET',
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: "http://localhost:8081/user/rest",
+                success: function (data) {
+                    var aTeg = document.getElementById('mail-role');
+
+                    var login = data.login;
+                    var role = data.role;
+
+                    aTeg.innerHTML = 'User: ' + login + '; role: ' + role;
+
+                }
+            });
+        }
+
+    });
+</script>
+
 
 </div>
 </body>

@@ -8,4 +8,5 @@ public interface RoleDao extends JpaRepository<Role, Long> {
     Role findRoleByName(String name);
 
     boolean existsRolesByName(String name);
+
 }

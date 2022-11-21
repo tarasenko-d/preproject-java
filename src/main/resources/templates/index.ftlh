@@ -1,7 +1,7 @@
 <#import "ui.ftl" as ui/>
 
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Users</title>
     <meta charset="UTF-8">
@@ -37,13 +37,20 @@
         }
 
         .modal__content {
-            width: 100%;
             max-width: 500px;
             padding: 50px;
             background: #f9f9f9;
             border-radius: 3px;
             position: relative;
             box-shadow: 0 5px 15px black;
+        }
+
+        .modal__form {
+            margin-left: auto;
+            margin-top: auto;
+            padding-bottom: 80px;
+            padding-top: 40px;
+            text-align: center;
         }
 
         .modal__close-button {
@@ -172,7 +179,7 @@
 <body>
 
 <div class="header">
-    <a>---@mail.ru role: --- </a>
+    <a id="mail-role"></a>
 </div>
 
 <div class="main">
@@ -189,10 +196,12 @@
         <div class="panel">
             <a href="/list" class="active">List of users</a>
             <a href="/admin/add">Add user</a>
+            <a href="/kids">Age list</a>
         </div>
 
         <div>
-            <table id="table-info" class="table table-hover table-striped">
+            <table class="table table-hover table-striped">
+                <thead>
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Login</th>
@@ -202,54 +211,36 @@
                     <th scope="col">Edit</th>
                     <th scope="col">Delete</th>
                 </tr>
-
-                <#list userList as user>
-                    <tr>
-                        <td> ${user.getId()}</td>
-                        <td> ${user.getLogin()}</td>
-                        <td> ${user.getPassword()}</td>
-                        <td> ${user.getAge()}</td>
-                        <td> ${user.rolesToString()}</td>
-                        <td>
-                         <#-- <a class="btn btn-primary" href="/admin/edit?id=${user.getId()}">Edit</a>-->
-                          <button class="btn btn-primary callback-button">Edit</button>
-                        </td>
-                        <td>
-                            <a class="btn btn-danger" href="/admin/delete?id=${user.getId()}">Delete</a>
-                        </td>
-                    </tr>
-                </#list>
+                <thead>
+                <tbody id="table">
+                </tbody>
             </table>
         </div>
-
-
-        <form name="age" action="kids" method="GET">
-            <label> Найти пользователей до </label>
-            <input type="text" name="age" value="">
-            <input type="submit" value="Поиск"/>
-        </form>
     </div>
-
-
 </div>
+
+
 <div class="modal">
     <div class="modal__content">
-      <button class="modal__close-button close" type="button" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-      </button>
-          <form name="user" action="/admin/edit" method="POST">
-              <label>Логин</label>
-              <input type="text" name="login" value=""> <br/>
-              <label>Пароль</label>
-              <input type="text" name="password" value=""> <br/>
-              <label>Возраст</label>
-              <input type="text" name="age" value=""> <br/>
-              <input type="hidden" name="id" value="">
-            <input type="submit" value="Save"/>
-        </form>
+        <div class="modal__form">
+            <button class="modal__close-button close" type="button" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <form id="user-edit">
+                <input id="id-input" type="hidden" name="id">
+                <label>Логин</label> <br/>
+                <input id="login-input" type="text" name="login"> <br/><br/>
+                <label>Пароль</label><br/>
+                <input id="password-input" type="text" name="password"> <br/><br/>
+                <label>Возраст</label><br/>
+                <input id="age-input" type="text" name="age"> <br/><br/>
+
+                <button id="modal__edit-button" class="btn btn-primary"/>
+                Сохранить изменения</button>
+            </form>
+        </div>
     </div>
 </div>
-
 
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -263,16 +254,148 @@
         crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-
     $(function () {
-        $('.callback-button').click(function () {
 
-            $('.modal').addClass('modal_active');
+        function mainAjaxForm() {
+            $.ajax({
+                type: 'GET',
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: "http://localhost:8081/list/rest",
+                success: function (data) {
+                    $('#table').empty();
+
+                    data.forEach(element => {
+
+                        var row = document.createElement("tr");
+                        var id = document.createElement('td');
+                        var login = document.createElement('td');
+                        var password = document.createElement('td');
+                        var age = document.createElement('td');
+                        var role = document.createElement('td');
+                        var editBtn = document.createElement('td');
+                        var deleteBtn = document.createElement('td');
+
+                        var index = element.id;
+
+                        id.innerHTML = element.id;
+                        login.innerHTML = element.login;
+                        password.innerHTML = element.password;
+                        age.innerHTML = element.age;
+                        role.innerHTML = element.role;
+
+                        editBtn.innerHTML = '<button class="btn btn-primary callback-button" data-id="' + index + '">Edit</button>';
+
+                        $('.callback-button').click(function () {
+                            var $this = $(this),
+                                id = $this.attr('data-id');
+                            $.ajax({
+                                type: 'GET',
+                                data: {},
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                url: "http://localhost:8081/admin/edit/rest/" + id + "",
+                                success: function (data) {
+                                    $('#id-input').attr('value', data.id);
+                                    $('#login-input').attr('value', data.login);
+                                    $('#password-input').attr('value', data.password);
+                                    $('#age-input').attr('value', data.age);
+                                }
+                            });
+                            $('.modal').addClass('modal_active');
+                        });
+
+                        deleteBtn.innerHTML = '<button class="btn btn-danger delete-user-button" data-id="' + index + '" >Delete</button>';
+
+                        $('.delete-user-button').click(function () {
+                            var $this = $(this),
+                                id = $this.attr('data-id');
+                            $.ajax({
+                                type: 'DELETE',
+                                data: {},
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                url: "http://localhost:8081/admin/delete/rest/" + id + "",
+                                success: function (data) {
+                                    mainAjaxForm();
+                                }
+                            });
+                        });
+
+                        row.appendChild(id);
+                        row.appendChild(login);
+                        row.appendChild(password);
+                        row.appendChild(age);
+                        row.appendChild(role);
+                        row.appendChild(editBtn);
+                        row.appendChild(deleteBtn);
+
+                        $('#table').append(row);
+                    });
+                },
+
+                error: function (errorMessage) {
+                    console.log(errorMessage);
+                }
+            });
+            mailRoleString()
+        }
+
+        function mailRoleString() {
+            $.ajax({
+                type: 'GET',
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: "http://localhost:8081/user/rest",
+                success: function (data) {
+                    var aTeg = document.getElementById('mail-role');
+
+                    var login = data.login;
+                    var role = data.role;
+
+                    aTeg.innerHTML = 'User: ' + login + '; role: ' + role;
+
+                }
+            });
+        }
+
+
+        mainAjaxForm();
+
+
+        $('#modal__edit-button').click(function (event) {
+            event.preventDefault();
+            var form = $('#user-edit');
+            var formInput = form[0];
+            console.log(formInput);
+            sendAjaxForm(formInput);
         });
+
+        function sendAjaxForm(form) {
+            $.ajax({
+                type: 'PUT',
+                data: JSON.stringify({
+                    id: +form[0].value,
+                    login: form[1].value,
+                    password: form[2].value,
+                    age: +form[3].value
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: 'http://localhost:8081/admin/edit/rest',
+                success: function (form) {
+                    mainAjaxForm();
+                    $('.modal').removeClass('modal_active');
+                }
+            });
+        }
 
         $('.modal__close-button').click(function () {
             $('.modal').removeClass('modal_active');
         });
+
     });
 </script>
 

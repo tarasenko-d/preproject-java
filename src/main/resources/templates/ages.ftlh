@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Список с ограничениями</title>
+    <title>Ages List</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -87,6 +87,10 @@
         padding: 0px 10px;
     }
 
+    .input-age{
+        margin-top: 6px;
+    }
+
     body {
         background-color: #ffffff;
     }
@@ -107,7 +111,7 @@
 <body>
 
 <div class="header">
-    <a>---@mail.ru role: --- </a>
+    <a id="mail-role"></a>
 </div>
 
 <div class="main">
@@ -119,38 +123,120 @@
 
     <h2>Admin panel</h2>
 
-    <div  class="panel">
-        <a href="/list" class="active">List of users</a>
+    <div class="panel">
+        <a href="/list" >List of users</a>
         <a href="/admin/add">Add user</a>
+        <a href="/kids" class="active">Age list</a>
     </div>
-    <table class="table table-hover">
-        <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Login</th>
-            <th scope="col">Password</th>
-            <th scope="col">Age</th>
-        </tr>
 
-        <#list userList as user>
+    <div class="input-age">
+        <form id="age-form">
+            <label> Найти пользователей до </label>
+            <input type="text" name="age" value="">
+            <button id="kids-search" type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+    </div>
+    <div>
+        <table class="table table-hover table-striped">
+            <thead>
             <tr>
-                <td> ${user.getId()}</td>
-                <td> ${user.getLogin()}</td>
-                <td> ${user.getPassword()}</td>
-                <td> ${user.getAge()}</td>
+                <th scope="col">ID</th>
+                <th scope="col">Login</th>
+                <th scope="col">Password</th>
+                <th scope="col">Age</th>
+                <th scope="col">Roles</th>
             </tr>
-        </#list>
-    </table>
+            <thead>
+            <tbody id="table">
+            </tbody>
+        </table>
+    </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
 
+            $('#kids-search').click(function (event) {
+                event.preventDefault();
+                var form = $('#age-form');
+                var formInput = form[0];
+                var age = formInput[0].value;
+                ageAjaxForm(age);
+            });
+
+            function ageAjaxForm(age) {
+                $.ajax({
+                    type: 'GET',
+                    data:{
+                        'age': age
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    url: "http://localhost:8081/kids/rest",
+                    success: function (data) {
+                        $('#table').empty();
+
+                        data.forEach(element => {
+
+                            var row = document.createElement("tr");
+                            var id = document.createElement('td');
+                            var login = document.createElement('td');
+                            var password = document.createElement('td');
+                            var age = document.createElement('td');
+                            var role = document.createElement('td');
+
+
+                            id.innerHTML = element.id;
+                            login.innerHTML = element.login;
+                            password.innerHTML = element.password;
+                            age.innerHTML = element.age;
+                            role.innerHTML = element.role;
+
+
+                            row.appendChild(id);
+                            row.appendChild(login);
+                            row.appendChild(password);
+                            row.appendChild(age);
+                            row.appendChild(role);
+
+                            $('#table').append(row);
+                        });
+                    }
+                });
+
+
+            }
+
+            function mailRoleString() {
+                $.ajax({
+                    type: 'GET',
+                    data: {},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    url: "http://localhost:8081/user/rest",
+                    success: function (data) {
+                        var aTeg = document.getElementById('mail-role');
+
+                        var login = data.login;
+                        var role = data.role;
+
+                        aTeg.innerHTML = 'User: ' + login + '; role: ' + role;
+
+                    }
+                });
+            }
+            mailRoleString()
+        });
+    </script>
 </div>
 </body>
 </html>

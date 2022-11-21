@@ -101,19 +101,23 @@
             }
         }
 
+        .visible-admin {
+            display: none;
+        }
+
     </style>
 
 </head>
 <body>
 
 <div class="header">
-    <a>---@mail.ru role: --- </a>
+    <a id="mail-role"></a>
 </div>
 
 <div class="main">
 
     <div class="sidenav">
-        <a href="/list">Admin</a> <br>
+        <a href="/list" class="admin-panel">Admin</a> <br>
         <a href="/user" class="is-active">User</a>
     </div>
     <div class="central">
@@ -126,12 +130,8 @@
                     <th scope="col">Age</th>
                     <th scope="col">Roles</th>
                 </tr>
-                    <tr>
-                        <td> ${user.getId()}</td>
-                        <td> ${user.getLogin()}</td>
-                        <td> ${user.getPassword()}</td>
-                        <td> ${user.getAge()}</td>
-                        <td> ${user.rolesToString()}</td>
+                <tbody id="table">
+                </tbody>
             </table>
         </div>
     </div>
@@ -146,7 +146,75 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.admin-panel').addClass('visible-admin');
+            function mainAjaxForm() {
+                $.ajax({
+                    type: 'GET',
+                    data: {},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    url: "http://localhost:8081/user/rest",
+                    success: function (data) {
+                            $('#table').empty();
 
+                            var row = document.createElement("tr");
+                            var id = document.createElement('td');
+                            var login = document.createElement('td');
+                            var password = document.createElement('td');
+                            var age = document.createElement('td');
+                            var role = document.createElement('td');
+
+                            id.innerHTML = data.id;
+                            login.innerHTML = data.login;
+                            password.innerHTML = data.password;
+                            age.innerHTML = data.age;
+                            role.innerHTML = data.role;
+
+                            if(data.role=="ROLE_ADMIN") {
+                                $('.admin-panel').removeClass('visible-admin');
+                            }
+
+                            row.appendChild(id);
+                            row.appendChild(login);
+                            row.appendChild(password);
+                            row.appendChild(age);
+                            row.appendChild(role);
+
+                            $('#table').append(row);
+
+                    }
+
+
+                });
+                mailRoleString()
+            }
+
+            function mailRoleString() {
+                $.ajax({
+                    type: 'GET',
+                    data: {},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    url: "http://localhost:8081/user/rest",
+                    success: function (data) {
+                        var aTeg = document.getElementById('mail-role');
+
+                        var login = data.login;
+                        var role = data.role;
+
+                        aTeg.innerHTML = 'User: '+ login + '; role: '+role;
+
+                    }
+                });
+            }
+
+            mainAjaxForm();
+
+        });
+    </script>
 </div>
 </body>
 </html>

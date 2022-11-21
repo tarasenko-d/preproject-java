@@ -4,6 +4,7 @@ import javacode.dao.RoleDao;
 import javacode.dao.UserDao;
 import javacode.model.Role;
 import javacode.model.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,6 +28,9 @@ public class UserServiceImp implements UserService, UserDetailsService {
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public void add(User user) {

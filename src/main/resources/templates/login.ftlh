@@ -15,7 +15,7 @@
         <legend>Авторизуйтесь</legend>
         <form action="/login" method="POST">
             <@ui.formInput id="t2" name="username" placeholder="Логин" /> <br/>
-            <@ui.formInput id="t3" name="password" placeholder="Пароль"/> <br/>
+            <@ui.formInput id="t3" name="password" placeholder="Пароль"/> <br/><br/>
             <input type="submit" class="btn btn-primary" value="Войти"/>
         </form>
     </fieldset>
