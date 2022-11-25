@@ -1,57 +1,52 @@
 package javacode;
 
-import javacode.dao.RoleDao;
-import javacode.dao.UserDao;
-import javacode.model.Role;
 import javacode.model.User;
+import javacode.service.RoleService;
+import javacode.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.Set;
 
 @Component
 public class RunAfterStartup {
-    @Autowired
-    private UserDao userDao;
 
     @Autowired
-    private RoleDao roleDao;
+    private UserService userService;
 
     @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private RoleService roleService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
         System.out.println("I am running........");
 
-        if (!roleDao.existsRolesByName("ROLE_ADMIN")) {
-            System.out.println("Role Admin doesnt exist before");
-            roleDao.save(new Role("ROLE_ADMIN"));
-        }
-        if (!roleDao.existsRolesByName("ROLE_USER")) {
-            System.out.println("Role User doesnt exist before");
-            roleDao.save(new Role("ROLE_USER"));
+        String[] roles = new String[]{"ROLE_ADMIN","ROLE_USER"};
+        User admin = new User("admin", "admin", 18);
+        User user = new User("user", "user", 18);
+
+        for (String role : roles) {
+            if (roleService.roleExists(role)) {
+                System.out.println("Role "+role+" doesnt exist before");
+                roleService.addRole(role);
+            }
         }
 
-        if (!userDao.findByLogin("admin").isPresent()) {
-            User admin = new User("admin", "admin", 18);
-            admin.setRoles(Collections.singleton(roleDao.findRoleByName("ROLE_ADMIN")));
-            System.out.println(roleDao.findRoleByName("ROLE_ADMIN"));
-            admin.setPassword(bCryptPasswordEncoder.encode(admin.getPassword()));
+        if (!userService.userExists("admin")) {
+            admin.setRoles(Collections.singleton(roleService.getRole("ROLE_ADMIN")));
             System.out.println(admin);
-            userDao.save(admin);
+            userService.addWithRole(admin);
         }
-        if (!userDao.findByLogin("user").isPresent()) {
-            User user = new User("user", "user", 20);
-            user.setRoles(Collections.singleton(roleDao.findRoleByName("ROLE_USER")));
-            System.out.println(roleDao.findRoleByName("ROLE_USER"));
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        if (!userService.userExists("user")) {
+            user.setRoles(Collections.singleton(roleService.getRole("ROLE_USER")));
             System.out.println(user);
-            userDao.save(user);
+            userService.addWithRole(user);
         }
+
         System.out.println("Run after startup end.");
     }
 }

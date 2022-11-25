@@ -176,9 +176,9 @@
                             age.innerHTML = data.age;
                             role.innerHTML = data.role;
 
-                            if(data.role=="ROLE_ADMIN") {
-                                $('.user-bar').addClass('visible-bar');
-                            }
+                        console.log(role);
+
+                        $('.user-bar').addClass('visible-bar');
 
                             row.appendChild(id);
                             row.appendChild(login);

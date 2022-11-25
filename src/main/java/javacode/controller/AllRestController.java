@@ -1,13 +1,13 @@
 package javacode.controller;
 
-import javacode.dto.DtoMapper;
 import javacode.dto.UserDto;
+import javacode.mapper.UserMapper;
 import javacode.model.User;
 import javacode.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +15,6 @@ import java.util.List;
 public class AllRestController {
 
     private final UserService userService;
-
-    @Autowired
-    private DtoMapper modelMapper;
 
 
     public AllRestController(UserService userService) {
@@ -29,7 +26,11 @@ public class AllRestController {
         List<User> users = userService.listUser();
         List<UserDto> userDtoList = new ArrayList<>();
         for (User user : users) {
-        userDtoList.add(modelMapper.mapToDto(user));
+
+            UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+            userDtoList.add(userDto);
+            System.out.println(userDto);
+
         }
         return userDtoList;
     }
@@ -40,42 +41,46 @@ public class AllRestController {
         List<User> personList = userService.findAllKids(age);
         List<UserDto> userDtoList = new ArrayList<>();
         for (User user : personList) {
-            System.out.println(user);
-            userDtoList.add(modelMapper.mapToDto(user));
+            UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+            userDtoList.add(userDto);
+            System.out.println(userDto);
         }
         System.out.println("kid rest");
         return userDtoList;
     }
 
     @GetMapping(value = "/admin/edit/rest/{id}")
-    public User editUser(@PathVariable(name = "id") Long id) {
-        User userToEdit = userService.findById(id);
-        System.out.println("Get edit: "+userToEdit);
+    public UserDto editUser(@PathVariable(name = "id") Long id) {
+        User user = userService.findById(id);
+        UserDto userToEdit = UserMapper.INSTANCE.userToUserDto(user);
+        System.out.println("Get edit: " + userToEdit);
         return userToEdit;
     }
 
     @PutMapping(value = "/admin/edit/rest")
-    public User edit(@RequestBody UserDto userDto) {
-        System.out.println("Put edit receive DTO: \n"+userDto);
-        User user = modelMapper.mapToUser(userDto);
-        System.out.println("Put edit receive: \n"+user);
+    public void edit(@RequestBody UserDto userDto) {
+        System.out.println("Put edit receive DTO: \n" + userDto);
+        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
+        System.out.println("Put edit receive: \n" + user);
         userService.edit(user);
-        return user;
     }
 
     @GetMapping("/user/rest")
-    public UserDto getUser() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("User actual:\n"+user);
-        UserDto userDto = modelMapper.mapToDto(user);
+    public UserDto getUser(Principal principal) {
+        // User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(principal);
+        User user = (User) userService.loadUserByUsername(principal.getName());
+        System.out.println("User actual:\n" + user);
+        UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+        System.out.println(userDto);
         return userDto;
     }
 
     @PostMapping(value = "/save/rest")
     public void add_post(@RequestBody UserDto userDto) {
-        System.out.println("Post save receive DTO:\n"+userDto);
-        User user = modelMapper.mapToUser(userDto);
-        System.out.println("Post save receive:\n"+user);
+        System.out.println("Post save receive DTO:\n" + userDto);
+        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
+        System.out.println("Post save receive:\n" + user);
         userService.add(user);
     }
 
@@ -86,3 +91,13 @@ public class AllRestController {
         userService.delete(userToDelete);
     }
 }
+
+//TODO
+/*  исправить на сет в дто
+    маппер переделать на mapsruct
+    роль исправить на enum
+    посмотреть как работает шифрование, почему нельзя расшифровать
+    rest naming
+    cacheable
+    vk api, token
+*/

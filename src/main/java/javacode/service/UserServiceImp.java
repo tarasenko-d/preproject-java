@@ -2,10 +2,9 @@ package javacode.service;
 
 import javacode.dao.RoleDao;
 import javacode.dao.UserDao;
-import javacode.model.Role;
 import javacode.model.User;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,17 +23,15 @@ public class UserServiceImp implements UserService, UserDetailsService {
     private UserDao userDao;
 
     @Autowired
-    private RoleDao roleDao;
+    private RoleService roleService;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Override
     public void add(User user) {
-        user.setRoles(Collections.singleton(roleDao.findRoleByName("ROLE_USER")));
+        user.setRoles(Collections.singleton(roleService.getRole("ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         System.out.println(user);
         userDao.save(user);
@@ -46,7 +43,9 @@ public class UserServiceImp implements UserService, UserDetailsService {
     }
 
     @Override
+    @Cacheable(cacheNames="listUser")
     public List<User> listUser() {
+        System.out.println("Find all users method");
         List<User> personList = new ArrayList<>();
         userDao.findAll().forEach(personList::add);
         return personList;
@@ -75,18 +74,21 @@ public class UserServiceImp implements UserService, UserDetailsService {
     }
 
     @Override
+    @Cacheable(cacheNames="listAges")
     public List<User> findAllKids(int age) {
+        System.out.println("Find all kids method");
         return new ArrayList<>(userDao.findAllByAgeBefore(age));
     }
 
     @Override
-    public void addByAdmin(User user) {
+    public void addWithRole(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         System.out.println(user);
         userDao.save(user);
     }
 
     @Override
+    @Cacheable(cacheNames="loadByName")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userDao.findByLogin(username);
         System.out.println("Load user by name "+ username +"!");
@@ -97,5 +99,8 @@ public class UserServiceImp implements UserService, UserDetailsService {
         return user.get();
     }
 
-
+    @Override
+    public boolean userExists(String login) {
+        return userDao.findByLogin(login).isPresent();
+    }
 }

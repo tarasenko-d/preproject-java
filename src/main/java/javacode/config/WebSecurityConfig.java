@@ -25,13 +25,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeRequests()
-                //Доступ только для не зарегистрированных пользователей
                 .antMatchers("/registration").permitAll()
-                //Доступ только для пользователей с ролью Администратор
                     .antMatchers("/user/**","/").authenticated()
                     .antMatchers("/save").permitAll()
                     .anyRequest().hasRole("ADMIN")
-              //  .anyRequest().permitAll()
+                //.anyRequest().permitAll()
                 .and()
                     .formLogin()
                     .loginPage("/login")
