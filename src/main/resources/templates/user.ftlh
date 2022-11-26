@@ -177,7 +177,7 @@
     <script>
         $(document).ready(function () {
             $('.admin-panel').addClass('visible-admin');
-            const access_token = "vk1.a.f852hlIyOZkmvIVKUU2Ra0zUUS-Nj04MX8SOONxDv0Fsa3-gT8z7sb2J_P1VfWzZCdfkXTECBiqj0Q_WZv4xtaNu4J93jefsJCaKHFYln-QrNCxmLUPPLAS8GJcNPW7YhRTim9kyUxyZD_U48CEeRbKSb51vGTTL5-XAo8Km2sgI8DE_6MPcPsRkBiS2DbhD";
+            const access_token = "///";
 
             function mainAjaxForm() {
                 $.ajax({
