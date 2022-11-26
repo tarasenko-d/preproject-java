@@ -9,12 +9,11 @@ import org.mapstruct.factory.Mappers;
 @Mapper(uses = {RoleMapper.class})
 public interface UserMapper {
 
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+   UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
    UserDto userToUserDto(User user);
 
    User userDtoToUser(UserDto userDto);
-
 
 
 }

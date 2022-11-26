@@ -86,6 +86,20 @@
             margin-left: 10px;
         }
 
+        .photo{
+            float: left;
+            margin-bottom: 8px;
+        }
+
+        .user-info{
+            margin-left: 15px ;
+
+        }
+        .user-info a {
+            font-size: 18px;
+            padding-left: 15px;
+        }
+
         body {
             position: absolute;
             background-color: #ffffff;
@@ -124,6 +138,14 @@
         <a href="/user" class="is-active">User</a>
     </div>
     <div class="central">
+        <div class="photo">
+            <img id="profilePhoto">
+        </div>
+        <div class="user-info">
+            <a id="vk-first-name"></a>
+            <br>
+            <a id="vk-last-name"></a>
+        </div>
         <div>
             <table class="table table-hover table-striped">
                 <tr>
@@ -131,12 +153,14 @@
                     <th scope="col">Login</th>
                     <th scope="col">Password</th>
                     <th scope="col">Age</th>
+                    <th scope="col">Vk</th>
                     <th scope="col">Roles</th>
                 </tr>
                 <tbody id="table">
                 </tbody>
             </table>
         </div>
+
     </div>
 
 
@@ -153,6 +177,8 @@
     <script>
         $(document).ready(function () {
             $('.admin-panel').addClass('visible-admin');
+            const access_token = "vk1.a.f852hlIyOZkmvIVKUU2Ra0zUUS-Nj04MX8SOONxDv0Fsa3-gT8z7sb2J_P1VfWzZCdfkXTECBiqj0Q_WZv4xtaNu4J93jefsJCaKHFYln-QrNCxmLUPPLAS8GJcNPW7YhRTim9kyUxyZD_U48CEeRbKSb51vGTTL5-XAo8Km2sgI8DE_6MPcPsRkBiS2DbhD";
+
             function mainAjaxForm() {
                 $.ajax({
                     type: 'GET',
@@ -161,38 +187,43 @@
                     dataType: "json",
                     url: "http://localhost:8081/user/rest",
                     success: function (data) {
-                            $('#table').empty();
+                        $('#table').empty();
 
-                            var row = document.createElement("tr");
-                            var id = document.createElement('td');
-                            var login = document.createElement('td');
-                            var password = document.createElement('td');
-                            var age = document.createElement('td');
-                            var role = document.createElement('td');
+                        var row = document.createElement("tr");
+                        var id = document.createElement('td');
+                        var login = document.createElement('td');
+                        var password = document.createElement('td');
+                        var age = document.createElement('td');
+                        var vkId = document.createElement('td');
+                        var role = document.createElement('td');
 
-                            id.innerHTML = data.id;
-                            login.innerHTML = data.login;
-                            password.innerHTML = data.password;
-                            age.innerHTML = data.age;
-                            role.innerHTML = data.role;
+                        id.innerHTML = data.id;
+                        login.innerHTML = data.login;
+                        password.innerHTML = data.password;
+                        age.innerHTML = data.age;
+                        vkId.innerHTML = data.profileId;
+                        role.innerHTML = data.role;
 
-                        console.log(role);
+                        photoAjaxForm(data.profileId,access_token);
 
                         $('.user-bar').addClass('visible-bar');
 
-                            row.appendChild(id);
-                            row.appendChild(login);
-                            row.appendChild(password);
-                            row.appendChild(age);
-                            row.appendChild(role);
 
-                            $('#table').append(row);
+                        row.appendChild(id);
+                        row.appendChild(login);
+                        row.appendChild(password);
+                        row.appendChild(age);
+                        row.appendChild(vkId);
+                        row.appendChild(role);
+
+                        $('#table').append(row);
 
                     }
 
 
                 });
-                mailRoleString()
+                mailRoleString();
+
             }
 
             function mailRoleString() {
@@ -206,10 +237,29 @@
                         var aTeg = document.getElementById('mail-role');
 
                         var login = data.login;
-                        var role = data.role;
 
-                        aTeg.innerHTML = 'User: '+ login + '; role: '+role;
+                        aTeg.innerHTML = 'User: ' + login;
 
+                    }
+                });
+            }
+            function photoAjaxForm(id,access_token) {
+                $.ajax({
+                    url: "https://api.vk.com/method/users.get",
+                    type: 'GET',
+                    data: {
+                        access_token: access_token,
+                        user_ids: parseInt(id),
+                        fields: "photo_200_orig ",
+                        v:5.131
+                    },
+                    dataType: 'jsonp',
+                    crossDomain: true,
+                    success: function (data) {
+                        console.log(data);
+                        document.getElementById("profilePhoto").setAttribute("src",data.response[0].photo_200_orig );
+                        document.getElementById("vk-first-name").innerHTML = data.response[0].first_name;
+                        document.getElementById("vk-last-name").innerHTML = data.response[0].last_name;
                     }
                 });
             }

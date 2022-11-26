@@ -1,10 +1,12 @@
 package javacode.service;
 
 import javacode.model.Role;
+import javacode.model.RolesEnum;
 
 public interface RoleService {
 
-    boolean roleExists(String roleName);
-    Role getRole(String roleName);
-    void addRole(String roleName);
+    boolean roleExists(RolesEnum roleName);
+    Role getRole(RolesEnum roleName);
+    void addRole(RolesEnum roleName);
+    void addRoleApp(Role role);
 }

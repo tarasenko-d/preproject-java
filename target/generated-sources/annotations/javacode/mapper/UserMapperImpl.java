@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-11-24T03:31:54+0300",
+    date = "2022-11-25T22:15:10+0300",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.17 (Amazon.com Inc.)"
 )
 public class UserMapperImpl implements UserMapper {
@@ -30,6 +30,7 @@ public class UserMapperImpl implements UserMapper {
         userDto.setLogin( user.getLogin() );
         userDto.setPassword( user.getPassword() );
         userDto.setAge( user.getAge() );
+        userDto.setProfileId( user.getProfileId() );
         userDto.setRoles( roleMapper.rolesToRolesDTO( user.getRoles() ) );
 
         return userDto;
@@ -47,6 +48,7 @@ public class UserMapperImpl implements UserMapper {
         user.setLogin( userDto.getLogin() );
         user.setPassword( userDto.getPassword() );
         user.setAge( userDto.getAge() );
+        user.setProfileId( userDto.getProfileId() );
         user.setRoles( roleDtoSetToRoleSet( userDto.getRoles() ) );
 
         return user;

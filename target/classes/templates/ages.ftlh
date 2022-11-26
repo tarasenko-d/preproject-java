@@ -227,9 +227,8 @@
                         var aTeg = document.getElementById('mail-role');
 
                         var login = data.login;
-                        var role = data.role;
 
-                        aTeg.innerHTML = 'User: ' + login + '; role: ' + role;
+                        aTeg.innerHTML = 'User: ' + login;
 
                     }
                 });

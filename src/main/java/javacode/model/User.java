@@ -29,15 +29,18 @@ public class User implements UserDetails {
     private String password;
     @Column
     private int age;
+    @Column
+    private String profileId;
     @Transient
     private String passwordConfirm;
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
-    public User(String log, String pass, int age) {
+    public User(String log, String pass, int age, String profileId) {
         this.age = age;
         this.login = log;
         this.password = pass;
+        this.profileId = profileId;
     }
 
     public String rolesToString() {

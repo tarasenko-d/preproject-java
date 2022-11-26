@@ -4,7 +4,6 @@ import javacode.dto.UserDto;
 import javacode.mapper.UserMapper;
 import javacode.model.User;
 import javacode.service.UserService;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -52,6 +51,7 @@ public class AllRestController {
     @GetMapping(value = "/admin/edit/rest/{id}")
     public UserDto editUser(@PathVariable(name = "id") Long id) {
         User user = userService.findById(id);
+
         UserDto userToEdit = UserMapper.INSTANCE.userToUserDto(user);
         System.out.println("Get edit: " + userToEdit);
         return userToEdit;
@@ -67,10 +67,8 @@ public class AllRestController {
 
     @GetMapping("/user/rest")
     public UserDto getUser(Principal principal) {
-        // User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println(principal);
         User user = (User) userService.loadUserByUsername(principal.getName());
-        System.out.println("User actual:\n" + user);
         UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
         System.out.println(userDto);
         return userDto;

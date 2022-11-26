@@ -151,6 +151,8 @@
                 <input id="password-input" type="text" name="password"  > <br/><br/>
                 <label>Возраст</label><br/>
                 <input id="age-input" type="text" name="age" > <br/><br/>
+                <label>Профиль</label><br/>
+                <input id="vk-input" type="text" name="profileId" > <br/><br/>
 
                 <button id="modal__save-button" class="btn btn-primary"/>
                 Сохранить</button>
@@ -188,7 +190,8 @@
                 data: JSON.stringify({
                     login: form[0].value,
                     password: form[1].value,
-                    age: +form[2].value
+                    age: +form[2].value,
+                    profileId: form[3].value
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -210,9 +213,8 @@
                     var aTeg = document.getElementById('mail-role');
 
                     var login = data.login;
-                    var role = data.role;
 
-                    aTeg.innerHTML = 'User: ' + login + '; role: ' + role;
+                    aTeg.innerHTML = 'User: ' + login;
 
                 }
             });

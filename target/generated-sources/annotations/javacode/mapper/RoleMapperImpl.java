@@ -9,37 +9,11 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-11-24T03:31:54+0300",
+    date = "2022-11-26T13:21:59+0300",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.17 (Amazon.com Inc.)"
 )
 @Component
 public class RoleMapperImpl implements RoleMapper {
-
-    @Override
-    public Role roleDtoToRole(RoleDto roleDto) {
-        if ( roleDto == null ) {
-            return null;
-        }
-
-        Role role = new Role();
-
-        role.setName( roleDto.getName() );
-
-        return role;
-    }
-
-    @Override
-    public RoleDto roleToRoleDto(Role role) {
-        if ( role == null ) {
-            return null;
-        }
-
-        RoleDto roleDto = new RoleDto();
-
-        roleDto.setName( role.getName() );
-
-        return roleDto;
-    }
 
     @Override
     public Set<RoleDto> rolesToRolesDTO(Set<Role> role) {
