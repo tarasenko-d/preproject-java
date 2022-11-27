@@ -1,9 +1,11 @@
 package javacode.controller;
 
+import javacode.api.RequestSender;
 import javacode.dto.UserDto;
 import javacode.mapper.UserMapper;
 import javacode.model.User;
 import javacode.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -13,6 +15,8 @@ import java.util.List;
 @RestController
 public class AllRestController {
 
+    @Autowired
+    private RequestSender requestSender;
     private final UserService userService;
 
 
@@ -69,6 +73,7 @@ public class AllRestController {
     public UserDto getUser(Principal principal) {
         System.out.println(principal);
         User user = (User) userService.loadUserByUsername(principal.getName());
+        System.out.println(user);
         UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
         System.out.println(userDto);
         return userDto;

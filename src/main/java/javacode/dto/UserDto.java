@@ -16,6 +16,7 @@ public class UserDto {
     private String password;
     private int age;
     private String profileId;
+    private String profileImg;
     private Set<RoleDto> roles;
 
 

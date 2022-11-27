@@ -283,7 +283,11 @@
                         login.innerHTML = element.login;
                         password.innerHTML = element.password;
                         age.innerHTML = element.age;
-                        role.innerHTML = element.role;
+                        let rolezzz = '';
+                        for (i in element.roles) {
+                            rolezzz = rolezzz + element.roles[i].name;
+                        }
+                        role.innerHTML = rolezzz;
 
                         editBtn.innerHTML = '<button class="btn btn-primary callback-button" data-id="' + index + '">Edit</button>';
 
@@ -353,9 +357,8 @@
                     var aTeg = document.getElementById('mail-role');
 
                     var login = data.login;
-                    var role = data.role;
 
-                    aTeg.innerHTML = 'User: ' + login + '; role: ' + role;
+                    aTeg.innerHTML = 'User: ' + login;
 
                 }
             });
@@ -386,10 +389,10 @@
                 dataType: "json",
                 url: 'http://localhost:8081/admin/edit/rest',
                 success: function (form) {
-                    mainAjaxForm();
-                    $('.modal').removeClass('modal_active');
                 }
             });
+            mainAjaxForm();
+            $('.modal').removeClass('modal_active');
         }
 
         $('.modal__close-button').click(function () {

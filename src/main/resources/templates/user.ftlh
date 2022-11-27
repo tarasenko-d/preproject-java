@@ -202,9 +202,16 @@
                         password.innerHTML = data.password;
                         age.innerHTML = data.age;
                         vkId.innerHTML = data.profileId;
-                        role.innerHTML = data.role;
+                        var rolezzz='';
+                        for (i in data.roles) {
+                            rolezzz = rolezzz+ data.roles[i].name;
+                        }
+                       role.innerHTML = rolezzz;
 
-                        photoAjaxForm(data.profileId,access_token);
+
+                        document.getElementById("profilePhoto").setAttribute("src", data.profileImg);
+
+                        vkAjaxForm(data.profileId,access_token);
 
                         $('.user-bar').addClass('visible-bar');
 
@@ -243,21 +250,19 @@
                     }
                 });
             }
-            function photoAjaxForm(id,access_token) {
+            function vkAjaxForm(id,access_token) {
                 $.ajax({
                     url: "https://api.vk.com/method/users.get",
                     type: 'GET',
                     data: {
                         access_token: access_token,
                         user_ids: parseInt(id),
-                        fields: "photo_200_orig ",
                         v:5.131
                     },
                     dataType: 'jsonp',
                     crossDomain: true,
                     success: function (data) {
                         console.log(data);
-                        document.getElementById("profilePhoto").setAttribute("src",data.response[0].photo_200_orig );
                         document.getElementById("vk-first-name").innerHTML = data.response[0].first_name;
                         document.getElementById("vk-last-name").innerHTML = data.response[0].last_name;
                     }

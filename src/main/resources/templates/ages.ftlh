@@ -199,7 +199,11 @@
                             login.innerHTML = element.login;
                             password.innerHTML = element.password;
                             age.innerHTML = element.age;
-                            role.innerHTML = element.role;
+                            var rolezzz='';
+                            for (i in element.roles) {
+                                rolezzz = rolezzz+ element.roles[i].name;
+                            }
+                            role.innerHTML = rolezzz;
 
 
                             row.appendChild(id);

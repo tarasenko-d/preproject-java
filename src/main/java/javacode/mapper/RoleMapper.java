@@ -17,11 +17,11 @@ public interface RoleMapper {
 
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
 
-@Named("roleDtoToRole")
-    default Role roleDtoToRole(RoleDto roleDto){
-    Role role = new Role(RolesEnum.valueOf(roleDto.getName()));
-    return role;
-}
+    @Named("roleDtoToRole")
+    default Role roleDtoToRole(RoleDto roleDto) {
+        Role role = new Role(RolesEnum.valueOf(roleDto.getName()));
+        return role;
+    }
 
     //@Mapping(target = "id", ignore = true)
     @Named("roleToRoleDto")

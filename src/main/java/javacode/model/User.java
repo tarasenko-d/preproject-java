@@ -31,6 +31,8 @@ public class User implements UserDetails {
     private int age;
     @Column
     private String profileId;
+    @Column
+    private String profileImg;
     @Transient
     private String passwordConfirm;
     @ManyToMany(fetch = FetchType.EAGER)

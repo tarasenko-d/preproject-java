@@ -1,5 +1,6 @@
 package javacode.service;
 
+import javacode.api.RequestSender;
 import javacode.dao.RoleDao;
 import javacode.dao.UserDao;
 import javacode.model.RolesEnum;
@@ -22,6 +23,8 @@ public class UserServiceImp implements UserService, UserDetailsService {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private RequestSender requestSender;
 
     @Autowired
     private RoleService roleService;
@@ -30,14 +33,7 @@ public class UserServiceImp implements UserService, UserDetailsService {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    @Override
-    @CacheEvict("listUser")
-    public void add(User user) {
-        user.setRoles(Collections.singleton(roleService.getRole(RolesEnum.ROLE_USER)));
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        System.out.println(user);
-        userDao.save(user);
-    }
+
 
     @Override
     public User findById(Long id) {
@@ -84,10 +80,20 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Override
     public void addWithRole(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setProfileImg(requestSender.sendImgRequest(user.getProfileId()));
         System.out.println(" AddWithRole: " + user);
         userDao.save(user);
     }
 
+    @Override
+    @CacheEvict("listUser")
+    public void add(User user) {
+        user.setRoles(Collections.singleton(roleService.getRole(RolesEnum.ROLE_USER)));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        System.out.println(user);
+        user.setProfileImg(requestSender.sendImgRequest(user.getProfileId()));
+        userDao.save(user);
+    }
     @Override
     @Cacheable(cacheNames = "loadByName")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
