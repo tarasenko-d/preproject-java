@@ -19,7 +19,7 @@ public class RequestSenderImp implements RequestSender {
     //String request = String.format("%s?user_id=%s&album_id=profile&access_token=%s&v=%s",url,vkId,accessToken,version);
 
     private static final String accessToken = "///";
-    private static final Integer appId = 51486545;
+    private static final Integer appId = 1111111;
 
 
     @Override
